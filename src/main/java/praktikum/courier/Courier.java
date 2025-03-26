@@ -13,9 +13,6 @@ public class Courier {
         this.firstName = firstName;
     }
 
-    public Courier() {
-    }
-
     public static Courier random() {
         int suffix = ThreadLocalRandom.current().nextInt(100, 100_000);
         return new Courier("Jack" + suffix, "P@ssw0rd123", "Sparrow");
