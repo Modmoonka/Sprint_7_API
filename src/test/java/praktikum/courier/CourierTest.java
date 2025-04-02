@@ -3,6 +3,7 @@ package praktikum.courier;
 import io.qameta.allure.Step;
 import io.qameta.allure.junit4.DisplayName;
 import io.restassured.response.ValidatableResponse;
+import org.apache.http.HttpConnection;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,21 +35,13 @@ public class CourierTest {
         client = new CourierClient();
     }
 
-    @After
-    @Step("Удаление курьера")
-    public void deleteCourier() {
-        if (courierId > 0) {
-            client.delete(courierId);
-        }
-    }
-
     @Test
     @DisplayName("Создание нового курьера")
     public void courier() {
         ValidatableResponse createResponse = client.createCourier(courier);
         check.created(createResponse);
 
-        var creds = Credentials.fromCourier(courier);
+        Credentials creds = Credentials.fromCourier(courier);
         ValidatableResponse loginResponse = client.logIn(creds);
         courierId = check.loginSuccess(loginResponse);
 
@@ -86,5 +79,13 @@ public class CourierTest {
         client.createCourier(courier);
         ValidatableResponse responseCreateCourier = client.createCourier(courier);
         check.loginIsExists(responseCreateCourier);
+    }
+
+    @After
+    @Step("Удаление курьера")
+    public void deleteCourier() {
+        if (courierId  >= 0) {
+            client.delete(courierId);
+        }
     }
 }

@@ -40,14 +40,6 @@ public class TestLogin {
         check = new CourierChecks();
     }
 
-    @After
-    @Step("Удалить курьера")
-    public void deleteCourier() {
-        if (courierId != 0) {
-            client.delete(courierId);
-        }
-    }
-
     @Test
     @DisplayName("Авторизация курьера c корректными данными")
     public void successfulLoginCourier() {
@@ -70,8 +62,7 @@ public class TestLogin {
     @Test
     @DisplayName("Авторизация без ввода пароля")
     public void courierWithoutPassword() {
-        Credentials credentialsWithoutLogin = new Credentials(Courier.random()
-                .getLogin(), "");
+        Credentials credentialsWithoutLogin = new Credentials(Courier.random().getLogin(), "");
         ValidatableResponse passwordErrorMessage = client.logIn(credentialsWithoutLogin).statusCode(HttpURLConnection.HTTP_BAD_REQUEST);
         passwordErrorMessage.assertThat()
                 .body("message", equalTo("Недостаточно данных для входа"));
@@ -94,5 +85,13 @@ public class TestLogin {
                 .statusCode(HttpURLConnection.HTTP_NOT_FOUND);
         courierNonExistentLogin.assertThat()
                 .body("message", equalTo("Учетная запись не найдена"));
+    }
+
+    @After
+    @Step("Удалить курьера")
+    public void deleteCourier() {
+        if (courierId >= 0) {
+            client.delete(courierId);
+        }
     }
 }

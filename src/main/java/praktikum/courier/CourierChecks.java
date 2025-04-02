@@ -7,6 +7,7 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertTrue;
 
 public class CourierChecks {
+
     @Step("Успешный логин")
     public int loginSuccess(ValidatableResponse loginResponse) {
         int id = loginResponse
@@ -31,7 +32,7 @@ public class CourierChecks {
     public void loginIsExists(ValidatableResponse response){
         response.assertThat()
                 .statusCode(HttpURLConnection.HTTP_CONFLICT)
-                .body("message", equalTo("Этот логин уже используется.")); //Идет не совпадение ОР и ФР
+                .body("message", equalTo("Этот логин уже используется. Попробуйте другой.")); //Идет не совпадение ОР и ФР
     }
 
     @Step("Запрос без логина и пароля")

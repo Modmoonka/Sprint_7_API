@@ -37,7 +37,7 @@ public class OrderTest {
 
     @After
     @Step("Отменить тестовый заказ")
-    public void CancelTestOrder() {
+    public void cancelTestOrder() {
         orderList.cancelOrder(track);
     }
 
