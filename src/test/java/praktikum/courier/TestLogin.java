@@ -28,6 +28,7 @@ public class TestLogin {
     private Credentials cred;
     private int courierId;
     public static final String invalidUsername = "snikers";
+    public ValidatableResponse responseLoginCourier;
 
 
     @Before
@@ -38,13 +39,13 @@ public class TestLogin {
         client.createCourier(courier);
         cred = Credentials.fromCourier(courier);
         check = new CourierChecks();
+        responseLoginCourier  = client.logIn(cred);
+        courierId = responseLoginCourier.extract().path("id");
     }
 
     @Test
     @DisplayName("Авторизация курьера c корректными данными")
     public void successfulLoginCourier() {
-        ValidatableResponse responseLoginCourier = client.logIn(cred);
-        courierId = responseLoginCourier.extract().path("id");
         check.loginSuccess(responseLoginCourier);
         System.out.println("Авторизовался курьер с ID: " + courierId);
     }
@@ -52,7 +53,7 @@ public class TestLogin {
     @Test
     @DisplayName("Авторизация курьера без заполнения логина")
     public void courierWithoutLogin() {
-        Credentials credWithoutLogin = new Credentials ("", Courier.random().getPassword());
+        Credentials credWithoutLogin = new Credentials ("", courier.getPassword());
         ValidatableResponse courierWithoutLogin = client.logIn(credWithoutLogin)
                 .statusCode(HttpURLConnection.HTTP_BAD_REQUEST);
         courierWithoutLogin.assertThat()
@@ -62,7 +63,7 @@ public class TestLogin {
     @Test
     @DisplayName("Авторизация без ввода пароля")
     public void courierWithoutPassword() {
-        Credentials credentialsWithoutLogin = new Credentials(Courier.random().getLogin(), "");
+        Credentials credentialsWithoutLogin = new Credentials(courier.getLogin(), "");
         ValidatableResponse passwordErrorMessage = client.logIn(credentialsWithoutLogin).statusCode(HttpURLConnection.HTTP_BAD_REQUEST);
         passwordErrorMessage.assertThat()
                 .body("message", equalTo("Недостаточно данных для входа"));
@@ -80,7 +81,7 @@ public class TestLogin {
     @Test
     @DisplayName("Авторизация с несуществующим логином")
     public void courierNonExistentLogin() {
-        Credentials credentialsWithNotExistingLogin = new Credentials(invalidUsername, Courier.random().getPassword());
+        Credentials credentialsWithNotExistingLogin = new Credentials(invalidUsername, courier.getPassword());
         ValidatableResponse courierNonExistentLogin = client.logIn(credentialsWithNotExistingLogin)
                 .statusCode(HttpURLConnection.HTTP_NOT_FOUND);
         courierNonExistentLogin.assertThat()
@@ -90,8 +91,9 @@ public class TestLogin {
     @After
     @Step("Удалить курьера")
     public void deleteCourier() {
-        if (courierId >= 0) {
+        if (courierId != 0) {
             client.delete(courierId);
+            System.out.println("Курьер с " + courierId + " удален");
         }
     }
 }

@@ -33,6 +33,7 @@ public class CourierTest {
         check = new CourierChecks();
         courier = Courier.random();
         client = new CourierClient();
+
     }
 
     @Test
@@ -78,13 +79,17 @@ public class CourierTest {
     public void courierWithChecks() {
         client.createCourier(courier);
         ValidatableResponse responseCreateCourier = client.createCourier(courier);
+        Credentials credentials = Credentials.fromCourier(courier);
+        courierId = client.logIn(credentials).extract().path("id");
         check.loginIsExists(responseCreateCourier);
+        client.delete(courierId);
+        System.out.println("Курьер с " + courierId + " удален");
     }
 
     @After
     @Step("Удаление курьера")
     public void deleteCourier() {
-        if (courierId  >= 0) {
+        if (courierId  != 0) {
             client.delete(courierId);
         }
     }

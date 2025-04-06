@@ -6,6 +6,7 @@ import org.junit.Test;
 import io.qameta.allure.junit4.DisplayName;
 import java.net.HttpURLConnection;
 import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
 
 /*
 Список заказов
@@ -19,6 +20,7 @@ public class OrderListTest {
     public void getOrderList() {
         OrderList orderList = new OrderList();
         ValidatableResponse responseOrderList = orderList.getOrderList();
-        responseOrderList.statusCode(HttpURLConnection.HTTP_OK).and().body("orders", notNullValue());
+        responseOrderList.statusCode(HttpURLConnection.HTTP_OK);
+        assertNotNull(responseOrderList.extract().path("orders"));
     }
 }
